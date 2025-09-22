@@ -26,36 +26,27 @@ public class TransactionService {
 
     @Transactional
     public Transaction create(Transaction transaction) {
-
-        // 1 validar a transcao
         validate(transaction);
-        // 2 criar a transacao
         var newTransaction = transactionRepository.save(transaction);
-        // 3 debitar
+
         var walletPayer = walletRepository.findById(transaction.payer()).get();
-        var walletPayee = walletRepository.findById(transaction.payee()).get();
         walletRepository.save(walletPayer.debit(transaction.value()));
+
+        var walletPayee = walletRepository.findById(transaction.payee()).get();
         walletRepository.save(walletPayee.credit(transaction.value()));
 
-        // 4 chamar servicos externos
         notificationService.notify(transaction);
 
-        // 5 autorizacao de transacoes
         authorizerService.authorize(transaction);
 
         return newTransaction;
     }
 
-    /*
-        - the payer has a common wallet
-        - the payer has enough balance
-        - the payer is not the payee
-     */
     private void validate(Transaction transaction) {
         walletRepository.findById(transaction.payee())
                 .map(payee -> walletRepository.findById(transaction.payer())
                         .map(payer -> isTransactionValid(transaction, payer) ? transaction : null)
-                        .orElseThrow(() -> new InvalidTransactionException("Invalid transaction - %s".formatted(transaction))))
+                        .orElseThrow(() -> new InsufficientTransactionBalanceException("Insufficient balance to complete the transaction. - %s".formatted(transaction))))
                 .orElseThrow(() -> new InvalidTransactionException("Invalid transaction - %s".formatted(transaction)));
 
     }

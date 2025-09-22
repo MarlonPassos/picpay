@@ -11,4 +11,15 @@ public class TransactionExceptionHandler {
     public ResponseEntity<Object> handle(InvalidTransactionException exception) {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
+
+    @ExceptionHandler(InsufficientTransactionBalanceException.class)
+    public ResponseEntity<Object> handle(InsufficientTransactionBalanceException exception) {
+        return ResponseEntity.badRequest().body(exception.getMessage());
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Object> handle(RuntimeException exception) {
+        return ResponseEntity.badRequest().body("An unexpected error occurred. Please try again later.");
+    }
+
 }
