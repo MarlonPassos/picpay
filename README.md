@@ -37,6 +37,38 @@ docker compose up
 
 Em seguida, rode o projeto executando a classe `PicpayApplication`.
 
+### 🔹 Acessando H2
+
+```declarative
+http://localhost:8080/h2-console
+```
+
+
+### 🔹 Realizando Transações com HTTPie
+
+Para efetuar uma transação via endpoint `/transaction`, utilize o comando:
+
+```bash
+http :8080/transaction value=400.0 payer=1 payee=2
+```
+
+Se a transação for bem-sucedida, a resposta será semelhante a:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Date: Mon, 22 Sep 2025 02:27:47 GMT
+
+{
+  "id": 3,
+  "payer": 1,
+  "payee": 2,
+  "value": 400.0,
+  "createdAt": "2025-09-21T23:27:47.203628"
+}
+```
+
+
 ---
 
 ## 🔹 Referência
