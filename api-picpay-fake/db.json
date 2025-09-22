@@ -1,0 +1,4 @@
+{
+  "notification": { "message": true },
+  "authorization": { "message": "Autorizado" }
+}
